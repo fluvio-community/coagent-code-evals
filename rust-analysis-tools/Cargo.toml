@@ -1,0 +1,65 @@
+[package]
+name = "evaluation-validator"
+version = "0.1.0"
+edition = "2021"
+authors = ["Terraphim Team"]
+description = "Comprehensive pre-flight validation for AI model evaluation processes"
+license = "MIT"
+keywords = ["validation", "ollama", "ai", "evaluation", "pre-flight"]
+categories = ["development-tools", "api-bindings"]
+
+[dependencies]
+# Async runtime and utilities
+tokio = { version = "1.0", features = ["full"] }
+tokio-util = "0.7"
+
+# HTTP client for Ollama API
+reqwest = { version = "0.11", features = ["json"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+
+# Logging
+log = "0.4"
+env_logger = "0.10"
+
+# Time handling - using jiff instead of chrono per requirements
+jiff = { version = "0.1", features = ["serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+
+# Regular expressions for parsing
+regex = "1.0"
+
+# System utilities
+num_cpus = "1.0"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[features]
+default = []
+# Enable additional debug logging and validation
+debug = []
+
+[[example]]
+name = "basic_validation"
+path = "examples/basic_validation.rs"
+
+[[example]]
+name = "advanced_validation"
+path = "examples/advanced_validation.rs"
+
+[lib]
+name = "evaluation_validator"
+path = "validation-framework/src/lib.rs"
+
+[[bin]]
+name = "validation-cli"
+path = "validation-framework/src/bin/validation_cli.rs"
+required-features = []

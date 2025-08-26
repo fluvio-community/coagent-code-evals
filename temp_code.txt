@@ -1,0 +1,50 @@
+mod atomic_data_fetcher;
+mod resource_helpers;
+
+use atomic_server_client::{types::Config, Resource, Store};
+use pulldown_cmark::{html, Parser};
+use std::collections::HashMap;
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
+use wasm_bindgen_futures::spawn_local;
+use web_sys::{window, Document, Element, HtmlAnchorElement};
+
+#[macro_use]
+extern crate lazy_static;
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+
+macro_rules! console_log {
+    ($($t:tt)*) => (log(&format!($($t)*)))
+}
+
+// --- Configuration & Constants ---
+
+const SITE_DATA_URL: &str = "https://common.terraphim.io/01jezwvdrkqjjc4t741gra3m2h/site-data";
+const SERVER_URL: &str = "https://common.terraphim.io";
+
+// Ontology URLs
+const PROP_NAME: &str = "https://atomicdata.dev/properties/name";
+const PROP_DESCRIPTION: &str = "https://atomicdata.dev/properties/description";
+
+const CLASS_WEBSITE: &str = "https://common.terraphim.io/01jezwvdrkqjjc4t741gra3m2h/website/class/website";
+const CLASS_PAGE: &str = "https://common.terraphim.io/01jezwvdrkqjjc4t741gra3m2h/website/class/page";
+const CLASS_TEXT_BLOCK: &str =
+    "https://common.terraphim.io/01jezwvdrkqjjc4t741gra3m2h/website/class/text-block";
+const CLASS_BLOG_POST: &str = "https://common.terraphim.io/01jezwvdrkqjjc4t741gra3m2h/website/class/blogpost";
+
+const PROP_MENU_ITEMS: &str =
+    "https://common.terraphim.io/01jezwvdrkqjjc4t741gra3m2h/website/property/menu-items";
+const PROP_HOMEPAGE: &str = "https://common.terraphim.io/01jezwvdrkqjjc4t741gra3m2h/website/property/homepage";
+const PROP_BLOCKS: &str = "https://common.terraphim.io/01jezwvdrkqjjc4t741gra3m2h/website/property/blocks";
+const PROP_PATH: &str = "https://common.terraphim.io/01jezwvdrkqjjc4t741gra3m2h/website/property/path";
+const PROP_LINKS_TO: &str = "https://common.terraphim.io/01jezwvdrkqjjc4t741gra3m2h/website/property/links-to";
+const PROP_EXTERNAL_LINK: &str =
+    "https://common.terraphim.io/01jezwvdrkqjjc4t741gra3m2h/website/property/external-link";
+const PROP_COVER_IMAGE: &str = "https://common.terraphim.io/01jezwvdrkqjjc4t741gra3m2h/website/property/cover-image";
+const PROP_PUBLISHED_AT: &str = "https://common.terraphim.io/01jezwvdrkqjjc4t741gra3m2h/website/property/published-at";
+

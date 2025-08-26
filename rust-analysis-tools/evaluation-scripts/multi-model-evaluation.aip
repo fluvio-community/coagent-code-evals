@@ -1,0 +1,91 @@
+# Instruction
+
+You are a senior Rust code evaluation specialist with expertise in WASM, async programming, and modern Rust patterns. 
+
+Analyze the provided Rust code systematically and provide a comprehensive evaluation following the EXACT format specified below.
+
+Focus your analysis on:
+- Code architecture and design patterns
+- Error handling and safety
+- Performance considerations
+- WASM-specific optimizations
+- Async/concurrency patterns
+- Memory management
+- Maintainability and readability
+
+Be specific, actionable, and provide concrete examples.
+
+```rust
+use atomic_server_client::{types::Config, Resource, Store};
+use pulldown_cmark::{html, Parser};
+use std::collections::HashMap;
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
+use wasm_bindgen_futures::spawn_local;
+use web_sys::{window, Document, Element, HtmlAnchorElement};
+
+#[macro_use]
+extern crate lazy_static;
+
+struct AppState {
+    store: Store,
+    resources: HashMap<String, Resource>,
+    blog_posts: Vec<Resource>,
+    website_subject: Option<String>,
+    page_map: HashMap<String, String>,
+}
+
+impl AppState {
+    fn new() -> Self {
+        let config = Config {
+            server_url: "https://common.terraphim.io".to_string(),
+            agent: None,
+        };
+        let store = Store::new(config).unwrap();
+        Self {
+            store,
+            resources: HashMap::new(),
+            blog_posts: Vec::new(),
+            website_subject: None,
+            page_map: HashMap::new(),
+        }
+    }
+    
+    fn get_resource(&self, subject: &str) -> Option<&Resource> {
+        self.resources.get(subject)
+    }
+}
+
+lazy_static! {
+    static ref APP_STATE: std::sync::Mutex<AppState> = std::sync::Mutex::new(AppState::new());
+}
+
+#[wasm_bindgen(start)]
+pub fn start() {
+    #[cfg(feature = "console_error_panic_hook")]
+    console_error_panic_hook::set_once();
+    spawn_local(init_app());
+}
+
+async fn init_app() {
+    // Initialize application
+}
+```
+
+## Output Format Requirements
+
+You MUST provide your analysis in EXACTLY this format. Do not deviate from this structure:
+
+**Score: X/10** - [One sentence justification]
+
+**Strengths:**
+1. [Specific strength] - [Concrete example from code]
+2. [Specific strength] - [Concrete example from code]
+3. [Specific strength] - [Concrete example from code]
+
+**Issues:**
+1. [Specific issue] - [Exact code location/line] - [Why it's problematic]
+2. [Specific issue] - [Exact code location/line] - [Why it's problematic]
+3. [Specific issue] - [Exact code location/line] - [Why it's problematic]
+
+**Primary Recommendation:** [Single most important improvement with specific action]

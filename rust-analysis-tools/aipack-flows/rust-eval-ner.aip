@@ -1,0 +1,80 @@
+# Instruction
+
+Analyze this Rust CLI NER (Named Entity Recognition) tool for quality, performance, and best practices:
+
+```rust
+use anyhow::{Context, Result};
+use clap::Parser;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::fs;
+use std::io::{self, Read};
+use std::path::PathBuf;
+use tokio;
+use tracing::{info, warn};
+
+#[derive(Parser, Debug)]
+#[command(author, version, about)]
+struct Args {
+    /// Path to the configuration file
+    #[arg(short, long, default_value = "config.yaml")]
+    config: PathBuf,
+
+    /// Optional input file (if not provided, reads from stdin)
+    #[arg(short, long)]
+    input: Option<PathBuf>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Config {
+    labels: HashMap<String, String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct NERRequest {
+    text: String,
+    labels: HashMap<String, String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Entity {
+    text: String,
+    label: String,
+    description: String,
+    start: usize,
+    end: usize,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct NERResponse {
+    entities: Vec<Entity>,
+}
+
+async fn process_text(text: String, labels: HashMap<String, String>) -> Result<NERResponse> {
+    let client = reqwest::Client::new();
+    let request = NERRequest { text, labels };
+    
+    let response = client
+        .post("http://localhost:11434/api/ner")
+        .json(&request)
+        .send()
+        .await
+        .context("Failed to send request to Ollama")?;
+    
+    let ner_response: NERResponse = response
+        .json()
+        .await
+        .context("Failed to parse NER response")?;
+    
+    Ok(ner_response)
+}
+```
+
+Focus on:
+1. **CLI Design** - clap usage, argument handling, stdin/file input patterns
+2. **Error Handling** - anyhow usage, context propagation, robustness  
+3. **Async Patterns** - tokio usage, HTTP client patterns
+4. **Data Models** - serde structs, API design, type safety
+5. **Dependencies** - appropriate crate choices for CLI tool
+
+Provide code quality score (1-10) and specific recommendations for CLI tools.
