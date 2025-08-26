@@ -1,0 +1,78 @@
+# Instruction
+
+Analyze this Rust WASM personal website code for quality, performance, and best practices:
+
+```rust
+mod atomic_data_fetcher;
+mod resource_helpers;
+
+use atomic_server_client::{types::Config, Resource, Store};
+use pulldown_cmark::{html, Parser};
+use std::collections::HashMap;
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
+use wasm_bindgen_futures::spawn_local;
+use web_sys::{window, Document, Element, HtmlAnchorElement};
+
+#[macro_use]
+extern crate lazy_static;
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+
+macro_rules! console_log {
+    ($($t:tt)*) => (log(&format!($($t)*)))
+}
+
+struct AppState {
+    store: Store,
+    resources: HashMap<String, Resource>,
+    blog_posts: Vec<Resource>,
+    website_subject: Option<String>,
+    page_map: HashMap<String, String>,
+}
+
+impl AppState {
+    fn new() -> Self {
+        let config = Config {
+            server_url: "https://common.terraphim.io".to_string(),
+            agent: None,
+        };
+        let store = Store::new(config).unwrap();
+        Self {
+            store,
+            resources: HashMap::new(),
+            blog_posts: Vec::new(),
+            website_subject: None,
+            page_map: HashMap::new(),
+        }
+    }
+    
+    fn get_resource(&self, subject: &str) -> Option<&Resource> {
+        self.resources.get(subject)
+    }
+}
+
+lazy_static! {
+    static ref APP_STATE: std::sync::Mutex<AppState> = std::sync::Mutex::new(AppState::new());
+}
+
+#[wasm_bindgen(start)]
+pub fn start() {
+    #[cfg(feature = "console_error_panic_hook")]
+    console_error_panic_hook::set_once();
+    spawn_local(init_app());
+}
+```
+
+Provide:
+1. **Code Quality Score** (1-10)
+2. **Strengths** - what's done well
+3. **Issues** - specific problems with examples
+4. **Recommendations** - actionable improvements
+5. **Performance Notes** - async/WASM patterns
+
+Focus on WASM-specific patterns, error handling, and async usage.

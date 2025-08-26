@@ -1,0 +1,21 @@
+# AIPACK Configuration for Rust Code Evaluation Flow
+
+[options]
+model = "llama3.2:3b"  # Temporary model for evaluation
+
+[options.model_aliases]
+# Core models for Rust evaluation
+llama3 = "llama3.2:3b"
+codellama = "codellama:7b"
+deepseek = "deepseek-coder:latest"
+
+# Specialized coding models
+rust-coder = "victornitu/rust-coder:latest"
+cogito = "cogito:latest"
+qwen3-coder = "qwen3-coder:latest"
+qwen25-coder = "qwen2.5-coder:latest"
+
+# Large language models
+gemma3 = "gemma3:27b"
+qwen3 = "qwen3:latest"
+qwen3-8b = "qwen3:8b"

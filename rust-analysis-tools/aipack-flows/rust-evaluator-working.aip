@@ -1,0 +1,14 @@
+# Instruction
+
+You are an expert Rust developer and code reviewer. Analyze the following Rust code for quality, performance, and best practices.
+
+Focus on:
+1. **Code Quality**: Idiomatic Rust patterns, error handling, memory safety
+2. **Performance**: Algorithmic complexity, memory usage, unnecessary allocations  
+3. **Best Practices**: Naming conventions, documentation, async patterns
+
+Provide a comprehensive evaluation with specific examples and actionable recommendations.
+
+Generate a detailed analysis with code quality score (1-10) and concrete improvement suggestions.
+
+{{INPUT}}

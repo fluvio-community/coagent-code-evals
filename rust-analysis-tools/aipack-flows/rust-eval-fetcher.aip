@@ -1,0 +1,106 @@
+# Instruction
+
+Analyze this Rust async data fetching module for quality, performance, and best practices:
+
+```rust
+use atomic_server_client::{Resource, Store};
+use serde_json::Value;
+use std::collections::{HashMap, VecDeque};
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+
+macro_rules! console_log {
+    ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
+}
+
+/// Fetches blog posts using the collections API
+pub async fn fetch_blog_posts(
+    store: &Store,
+    class_url: &str,
+) -> Result<Vec<Resource>, String> {
+    console_log!("Fetching blog posts from class: {}", class_url);
+    
+    let collection_url = format!("{}/collections?class={}", store.config.server_url, class_url);
+    
+    let result = match store.get_resource(&collection_url).await {
+        Ok(collection_resource) => {
+            let mut blog_posts = Vec::new();
+            
+            if let Some(members) = collection_resource.properties.get("members").and_then(|v| v.as_array()) {
+                for member in members {
+                    if let Some(subject) = member.get("subject").and_then(|s| s.as_str()) {
+                        match store.get_resource(subject).await {
+                            Ok(resource) => {
+                                blog_posts.push(resource);
+                            },
+                            Err(e) => {
+                                console_log!("Error fetching blog post {}: {}", subject, e);
+                            }
+                        }
+                    }
+                }
+                
+                console_log!("Fetched {} blog posts", blog_posts.len());
+                Ok(blog_posts)
+            } else {
+                Err("Invalid collection response format".to_string())
+            }
+        },
+        Err(e) => Err(format!("Failed to fetch collection: {}", e))
+    };
+    
+    result
+}
+
+pub async fn fetch_site_data(
+    store: &Store,
+    root: &str,
+) -> Result<HashMap<String, Resource>, String> {
+    let mut visited: Vec<String> = Vec::new();
+    let mut queue: VecDeque<String> = VecDeque::new();
+    let mut collected: HashMap<String, Resource> = HashMap::new();
+
+    queue.push_back(root.to_string());
+    let server_base_url = &store.config.server_url;
+
+    while let Some(subject) = queue.pop_front() {
+        if visited.contains(&subject) || !subject.starts_with(server_base_url) {
+            continue;
+        }
+
+        match store.get_resource(&subject).await {
+            Ok(res) => {
+                visited.push(subject.clone());
+                collected.insert(subject.clone(), res.clone());
+                
+                // Find linked resources and add them to queue
+                for value in res.properties.values() {
+                    if let Some(linked_subject) = extract_atomic_url(value) {
+                        if !visited.contains(&linked_subject) {
+                            queue.push_back(linked_subject);
+                        }
+                    }
+                }
+            }
+            Err(e) => {
+                return Err(format!("Failed to fetch resource {}: {}", subject, e));
+            }
+        }
+    }
+
+    Ok(collected)
+}
+```
+
+Focus on:
+1. **Async patterns** - proper async/await usage and error handling
+2. **Performance** - algorithm efficiency, memory usage, potential bottlenecks
+3. **Error handling** - Result types, error propagation, resilience
+4. **WASM-specific** - logging, data structures for web environment
+
+Provide code quality score (1-10) and specific improvement recommendations.

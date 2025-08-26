@@ -1,0 +1,36 @@
+[project]
+name = "rust-evaluation-pipelines"
+version = "0.1.0"
+description = "Multi-pipeline Rust code evaluation system using AIPACK, CrewAI, and smol-agents"
+requires-python = ">=3.10"
+dependencies = [
+    "crewai>=0.29.0",
+    "smolagents>=1.20.0",
+    "ollama==0.1.7",
+    "python-dotenv==1.0.0",
+    "requests>=2.32.3",
+    "aiohttp==3.9.1",
+    "pydantic>=2.6.1,<3.0.0",
+    "typing-extensions==4.8.0",
+    "rich>=13.9.4",
+    "click==8.1.7",
+]
+
+[project.scripts]
+crewai-eval = "evaluation_pipelines.crewai_eval:main"
+smolagents-eval = "evaluation_pipelines.smolagents_eval:main"
+aipack-eval = "evaluation_pipelines.aipack_eval:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["evaluation_pipelines"]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.0.0,<9.0.0",
+    "black==23.12.1",
+    "ruff==0.1.9",
+] 

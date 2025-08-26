@@ -1,0 +1,121 @@
+# Instruction
+
+You are a senior Rust code evaluation specialist with expertise in WASM, async programming, and modern Rust patterns.
+
+Analyze the provided Rust code systematically and provide a comprehensive evaluation.
+
+```rust
+use atomic_server_client::{types::Config, Resource, Store};
+use pulldown_cmark::{html, Parser};
+use std::collections::HashMap;
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
+use wasm_bindgen_futures::spawn_local;
+use web_sys::{window, Document, Element, HtmlAnchorElement};
+
+#[macro_use]
+extern crate lazy_static;
+
+struct AppState {
+    store: Store,
+    resources: HashMap<String, Resource>,
+    blog_posts: Vec<Resource>,
+    website_subject: Option<String>,
+    page_map: HashMap<String, String>,
+}
+
+impl AppState {
+    fn new() -> Self {
+        let config = Config {
+            server_url: "https://common.terraphim.io".to_string(),
+            agent: None,
+        };
+        let store = Store::new(config).unwrap();
+        Self {
+            store,
+            resources: HashMap::new(),
+            blog_posts: Vec::new(),
+            website_subject: None,
+            page_map: HashMap::new(),
+        }
+    }
+    
+    fn get_resource(&self, subject: &str) -> Option<&Resource> {
+        self.resources.get(subject)
+    }
+}
+
+lazy_static! {
+    static ref APP_STATE: std::sync::Mutex<AppState> = std::sync::Mutex::new(AppState::new());
+}
+
+#[wasm_bindgen(start)]
+pub fn start() {
+    #[cfg(feature = "console_error_panic_hook")]
+    console_error_panic_hook::set_once();
+    spawn_local(init_app());
+}
+
+async fn init_app() {
+    // Initialize application
+}
+```
+
+Focus your analysis on:
+- Code architecture and design patterns
+- Error handling and safety  
+- Performance considerations
+- WASM-specific optimizations
+- Async/concurrency patterns
+- Memory management
+- Maintainability and readability
+
+# Analysis
+
+## Code Quality Assessment
+
+Provide a numerical score (1-10) with detailed justification:
+
+**Score: {{score}}/10** - {{justification}}
+
+## Strengths Analysis
+
+Identify the top 3 strengths with specific examples:
+
+**Strengths:**
+1. {{strength1}} - {{example1}}
+2. {{strength2}} - {{example2}}  
+3. {{strength3}} - {{example3}}
+
+## Issues Identification
+
+Identify the top 3 issues with specific locations and explanations:
+
+**Issues:**
+1. {{issue1}} - {{location1}} - {{explanation1}}
+2. {{issue2}} - {{location2}} - {{explanation2}}
+3. {{issue3}} - {{location3}} - {{explanation3}}
+
+## Primary Recommendation
+
+**Primary Recommendation:** {{main_improvement}}
+
+## Detailed Analysis
+
+### Architecture Review
+{{architecture_assessment}}
+
+### Performance Considerations  
+{{performance_notes}}
+
+### Safety & Error Handling
+{{safety_analysis}}
+
+### WASM Optimization Opportunities
+{{wasm_optimizations}}
+
+# Summary
+
+Provide a concise summary of the evaluation with key takeaways and next steps.
+
+{{summary}}
